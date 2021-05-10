@@ -72,14 +72,14 @@
 |名前|性別|出身地|  
 |トイレの花子さん|女性|トイレ|
 
-| Left align | Right align | Center align 
-            |:-----------|------------:|:------------:|
-            | This       |        This |     This     
-            | column     |      column |    column    |
-            | will       |        will |     will     |
-            | be         |          be |      be      |
-            | left       |       right |    center    |
-            | aligned    |     aligned |   aligned    |
+| Left align | Right align | Center align |
+|:-----------|------------:|:------------:|
+| This       | This        | This         |
+| column     | column      | column       |
+| will       | will        | will         |
+| be         | be          | be           |
+| left       | right       | center       |
+| aligned    | aligned     | aligned      |
 
 ***
 
