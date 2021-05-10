@@ -10,6 +10,8 @@ $ php artisan -v
 ***
 
 ## Laravel makeコマンド集
+※作成しただけで中身のないファイルをスケルトンという
+
 ```
 $ php artisan make:作りたい種類 ファイル名 --オプション名
 ```
