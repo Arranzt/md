@@ -9,7 +9,7 @@ $ php artisan -v
 
 ***
 
-## Laravel makeコマンド
+## Laravel makeコマンド集
 ```
 $ php artisan make:作りたい種類 ファイル名 --オプション名
 ```
@@ -51,7 +51,9 @@ $ php artisan make:middleware ミドルウェア名
 
 ***
 
-## の作成
+## Laravelマイグレーション集
+
+## マイグレーションの実行
 ```
 $ php artisan make:
 ```
