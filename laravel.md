@@ -19,6 +19,9 @@ $ php artisan make:作りたい種類 ファイル名 --オプション名
 ## コントローラの作成
 ```
 $ php artisan make:controller コントローラー名
+
+※リソースコントローラーの作成
+$ php artisan make:controller コントローラー名 --resource
 ```
 
 ## モデルの作成
@@ -33,7 +36,7 @@ $ php artisan make:migration マイグレーション名
 
 $ php artisan make:migration create_users_table
 
-オプションを追加すると、テーブル名を含んだ雛形のマイグレーションファイルが作成される。
+--create=テーブル名というオプションを追加すると、テーブル名を含んだ雛形のマイグレーションファイルが作成される。
 $ php artisan make:migration create_users_table --create=users
 ```
 
@@ -57,6 +60,11 @@ $ php artisan make:provider サービスプロバイダ名
 $ php artisan make:middleware ミドルウェア名
 ```
 
+## 認証のスキャフォールディングの作成
+```
+$ php artisan make:auth
+```
+
 ***
 
 ## Laravelマイグレーション集
@@ -74,14 +82,39 @@ $ php artisan migrate:status
 ## マイグレーションを１つ前に戻す
 ```
 $ php artisan migrate:rollback
+
+戻す数を指定したい場合、--step=戻したい数というオプションを追加する
+$ php artisan migrate:rollback --step=1
+```
+
+## テーブルのリフレッシュ
+すべてリセットした後にマイグレーションを実行するコマンド
+```
+$ php artisan migrate:refresh
+```
+
+## テーブルのリセット
+```
+$ php artisan migrate:reset
 ```
 
 ***
+
 ## キャッシュクリア集
 
 ## キャッシュをクリアする
 ```
-$ php artisan config:cache
+$ php artisan cache:clear
+```
+
+## 設定キャッシュをクリアする
+```
+$ php artisan config:clear
+```
+
+## ルーティングのキャッシュをクリアする
+```
+$ php artisan route:clear
 ```
 
 ## Viewのキャッシュをクリアする
