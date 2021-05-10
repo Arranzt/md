@@ -48,6 +48,8 @@
 ![代替テキスト](URL)
 ```
 
+![代替テキスト](https://qiita-user-contents.imgix.net/https%3A%2F%2Fqiita-image-store.s3.amazonaws.com%2F0%2F126861%2F90386757-fd96-8ba6-3477-485669713c55.png?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&w=1400&fit=max&s=6d7886bf41dd6d31e771f967b05fde2b)
+
 ***
 
 ### サイズ指定した画像の挿入
@@ -55,9 +57,12 @@
 <img width="数値" alt="代替テキスト" src="URL">
 ```
 
+<img width="200" alt="代替テキスト" src="https://qiita-user-contents.imgix.net/https%3A%2F%2Fqiita-image-store.s3.amazonaws.com%2F0%2F126861%2F90386757-fd96-8ba6-3477-485669713c55.png?ixlib=rb-4.0.0&auto=format&gif-q=60&q=75&w=1400&fit=max&s=6d7886bf41dd6d31e771f967b05fde2b">
+
 ***
 
 ### テーブルの挿入
+
 ```
 |th左|th中央|th右|
 |内容|内容|内容|
@@ -90,9 +95,11 @@
 ### 注釈
 ```
 テキスト[^1]
+[^1]注釈内容
 ```
 
 トイレの花子さん[^1]
+[^1]:注釈内容
 
 ***
 
