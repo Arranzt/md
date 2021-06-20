@@ -771,4 +771,160 @@ lt → <
 lte → <=
 ```
 
+### バリデーションのカスタマイズ
+FormRequestを利用する
+```
+
+```
+
+### DBクラス(クエリビルダ)
+DBクラスを利用して、データベース処理を行う方法。DBクラスはデータベースアクセスのための基本的な機能をまとめたクラスで、ここにあるメソッドを呼びだすことでデータベースにアクセスできるようになる
+```
+DB::メソッド
+
+DB::select('select * from users')
+```
+
+### Eloquent(ORM)
+ORMという機能をLaravelに実装したもの  
+
+### データベースの設定
+config/database.phpに設定がある
+```
+<?php
+
+use Illuminate\Support\Str;
+
+return [
+
+    'default' => env('DB_CONNECTION', 'mysql'),
+    env関数→Laravelの環境変数を設定してくれる変数
+
+    'connections' => [
+
+        'sqlite' => [
+            'driver' => 'sqlite',
+            ドライバー名
+            
+            'url' => env('DATABASE_URL'),
+            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            使用するデータベース名をDB_DATABASEという環境変数に設定しておく
+            database_path関数はlaravelのdatabaseフォルダ内のパスを返り値として返す関数
+            
+            'prefix' => '',
+            データベースの名前の前に付ける文字列の指定
+            
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+        ],
+
+        'mysql' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'pgsql' => [
+            'driver' => 'pgsql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
+        'sqlsrv' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', 'localhost'),
+            'port' => env('DB_PORT', '1433'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+        ],
+        ],
+    ],
+];
+
+```
+
+### 環境変数
+.envファイルに記述するものが環境変数と呼ばれる  
+Laravelの基本的な動作環境に関する変数群のこと
+
+### DBクラスの操作
+```
+レコードの取得
+DB::select(実行したいSQL文)
+
+レコードの追加
+DB::insert(クエリ文, パラメータ配列)
+
+レコードの更新
+DB::update(クエリ文, パラメータ配列)
+
+レコードの削除
+DB::delete(クエリ文, パラメータ配列)
+```
+
+### プレースホルダ
+:名前という形で値を確保しておく場所を確保する方法をプレースホルダと呼ぶ。その後の引数にある配列から値を指定の場所にはめ込んでSQL文を完成させるのに用いる
+
+### クエリビルダ
+SQLのクエリ文を生成するために用意された一連のメソッド群のことをクエリビルダと呼ぶ。  
+Illuminate/Database/QueryにあるBuilderクラスがSQL文生成の機能を定義してくれている
+```
+DB::table(テーブル名)
+```
+
+テーブルのレコードを取得する  
+実行結果は配列として返ってくる
+```
+DB::table(テーブル名)->get();
+※カラムを指定する場合にはget(カラム名)とする
+
+DB::table('users')->get();
+DB::table('users')->get(['id', 'name']);
+```
+
+テーブルからレコードを取得する際の条件を指定する
+```
+where(フィールド名, 値)
+
+DB::table('users')->where('id', 1)->get();
+```
+
+最初のレコードのみ取得する
+```
+first()
+
+DB::table('users')->where('id', 1)->first();
+```
+
+
+
+
+
 
