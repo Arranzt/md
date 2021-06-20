@@ -492,8 +492,83 @@ class HelloMiddleware
 }
 
 ```
+$nextについて、これはClosureクラスのインスタンスになっている。これは無名クラスを表すためのクラス。ここで渡された$nextはクロージャとなっており、これを呼び出して実行することでミドルウェアからアプリケーションへと送られるリクエスト(Requestインスタンス)を作成することができる。  
+  
+mergeメソッド  
+フォームの送信などで送られるinputの値に、新たな値を追加するもの
+```
+$request->merge(配列)
 
+class HelloMiddleware
+{
+  public function handle(Request $request, Closure $next)
+    {
+        $data = ['name' => 'taro'];
+        $request->merge(['data' => $data]);
+        return $next($request);
+    }
+}
+```
 
+ミドルウェアの呼び出し
+```
+use App\Http\Middleware\HelloMiddleware;
+
+Route::get('hello', 'HelloController@index')->middleware(HelloMiddleware::class);
+```
+
+Afterミドルウェア
+```
+public function handle(Request $request, Closure $next)
+    {
+        $response = $next($request)
+          処理
+        return $response;
+    }
+```
+
+### グローバルミドルウェア
+全てのアクセスで自動的にミドルウェアを実行されるようにしたい、という場合に使うミドルウェア  
+全てのリクエストで利用可能となる  
+app/httpの中のKernel.phpの$middlewareに記述することで使えるようになる。
+```
+class Kernel extends HttpKernel
+{
+    protected $middleware = [
+        \App\Http\Middleware\HelloMiddeleware::class,
+        →こんな風に登録する
+        
+        \App\Http\Middleware\TrustProxies::class,
+        \Fruitcake\Cors\HandleCors::class,
+        \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \App\Http\Middleware\TrimStrings::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+    ];
+}
+```
+呼び出す時、middlewareのメソッドチェーンも不要になる
+```
+X Route::get('hello', 'HelloController@index')->middleware(HelloMiddleware::class);
+
+○ Route::get('hello', 'HelloController@index');
+```
+
+ミドルウェアのグループ化
+kernel.phpの$middlewareGroupsを利用する
+```
+protected $middlewareGroups = [
+        'web' => [
+            ミドルウェアのクラス
+        ],
+
+        'api' => [
+           ミドルウェアのクラス
+        ],
+    ];
+```
+このwebやapiという部分がグループになる  
+グループ名をキーとする値を用意し、そこにミドルウェアの配列を設定する
 
 
 
