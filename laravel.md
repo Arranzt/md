@@ -372,7 +372,126 @@ layoutsフォルダ内のhelloapp.blade.phpというレイアウトファイル�
 @endcomponent
 ```
 
+### @slot
+{{}}で指定された変数に値を設定するための仕組みをスロットと呼ぶ
+```
+@slot(名前)
 
+@endslot
+```
+
+### サブビュー
+あるビューから別のビューを読み込み、はめ込んだものをサブビューと呼ぶ
+```
+@include('テンプレート名', [値の指定])
+```
+
+### コレクションビュー
+予め用意されていた配列やコレクションから順に値を取り出し、指定のテンプレートにはめ込んで出力するものをコレクションビューと呼ぶ
+```
+@each(テンプレート名, 配列, 変数名)
+```
+
+### サービス
+Laravelに用意されている機能強化のための仕組みの１つ。Laravelにはサービスコンテナというシステムが用意されており、DIによって必要に応じてサービスと呼ばれるプログラムを自動的に自身の中に組み込み、使えるようにしてくれる。このサービスとサービスコンテナにより、必要に応じて各種の機能をアプリケーション内に組み込み、機能拡張していくことができるようになっている。
+
+### サービスプロバイダ
+サービスを登録しておくためのシステム。予め登録しておくための設定ファイルが用意されており、そこに記述するだけでアプリケーションに組み込まれるようになる。
+```
+<?php
+
+namespace App\Providers;
+use Illuminate\Support\ServiceProvider;
+
+class プロバイダクラス名 extends ServiceProvider
+{
+    public function register()
+    {
+        
+    }
+    registerメソッドは、サービスプロバイダの登録処理を行なってくれる。サービスを登録する処理などはここに記述する。
+    
+    public function boot()
+    {
+        
+    }
+    bootメソッドはアプリケーションへのブートストラップ処理（アプリケーションが起動する際に割り込んで実行される処理）を登録する箇所。
+}
+```
+
+### ビューコンポーザ
+コントローラでもモデルでもなく、ビューのみで利用するロジックを、ビューに直接書かず別の箇所に記載するための機能。これがあるおかげで、複雑なロジックをビューに直接書かなくても済んでいる
+```
+View::composer(ビューコンポーザが割り当てるビューの指定, 実行する処理となるクロージャかビューコンポーザのクラス)
+
+class HelloServiceProvider extends ServiceProvider
+{   
+    public function boot()
+    {
+      View::composer(
+        'hello.index', function($view){
+          $view->with('view_message', 'composer message');
+        }
+      );   
+    } 
+}
+```
+viewsフォルダ内のhelloフォルダ内にあるindex.blade.phpにview_messageという値を設定して処理している  
+$viewにはIlluminate/Viewクラスのインスタンスが自動的に入る  
+Illuminate/ViewクラスはViewを管理するオブジェクトとなっており、ここにあるメソッドを利用することでビューを操作できるようになる  
+  
+withメソッド  
+ビューに変数などを追加するメソッド
+```
+$view->with(変数名, 値)
+```
+
+サービスプロバイダの登録
+config/app.phpに記述する  
+providersという名前に設定された配列が、アプリケーションに登録されているプロバイダの一覧になる。ここにプロバイダクラスを追加することで、アプリケーション起動時にそれが登録され、利用できるようになる。
+```
+'providers' => [
+
+        /*
+         * Laravel Framework Service Providers...
+         */
+        Illuminate\Auth\AuthServiceProvider::class,
+
+        /*
+         * Package Service Providers...
+         */
+
+        /*
+         * Application Service Providers...
+         */
+        App\Providers\AppServiceProvider::class,
+        App\Providers\HelloServiceProvider::class
+
+    ],
+
+```
+
+### ミドルウェア
+リクエストを受け取るとコントローラ処理の前後に割り込み、独自の処理を追加する仕組み  
+「全てのアクセス時に何かを処理しておく」という記載をしたい時に役立つ  
+例えば、フォームのページを1億用意しておき、バリデーションさせる場合、フォームのページごとにバリデーションを実装すると日が暮れるので、「指定のアドレスにリクエストが送られてきたら、自動的になんらかの処理を行う」という仕組みがある  
+app/http/middlewareにある
+```
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+
+class HelloMiddleware
+{
+    public function handle(Request $request, Closure $next)
+    {
+        return $next($request);
+    }
+}
+
+```
 
 
 
