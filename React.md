@@ -40,12 +40,21 @@ import React from 'react';
 JSX
 const element = <h1 className="heading">Hello, JSX</h1>;
 
-JS タグ→属性→子要素の順
+React.createElement関数の中身 タグ→属性→子要素の順
 const element = React.createElement(
   "h1",
   { className: "heading" },
   "Hello, JSX"
 );
+
+JS
+const element = {
+  type: 'h1',
+  props: {
+    className: 'heading',
+    children: 'Hello, JSX'
+  }
+};
 ```
 
 ### React.createElement関数を利用する場合
