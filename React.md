@@ -102,6 +102,60 @@ ReactDOM.render(
 )
 ```
 
+### React.Fragmentコンポーネント
+Reactが提供する特殊コンポーネントで、HTMLとしての要素を持たない
+```
+const Hello = () => {
+  return (
+    <React.Fragment>
+      <div>こんにちは、トイレの花子さん</div>
+      <div>こんにちは、トイレの太郎くん</div>
+    </React.Fragment>
+  );
+};
+
+簡略記法
+<>
+</>
+```
+
+### propsの利用
+propsはobject型
+```
+const Hello = (props) => {
+  return (
+    <div>こんにちは、{ props.name }さん</div>;
+  );
+};
+
+ReactDOM.render(
+  <>
+    文字列の受渡しは、{}で囲むかそのまま書く
+    <Hello name="トイレの花子さん" />
+    <Hello name="テケテケ" />
+    <Hello name={ "桐生会" } />
+    
+    数値、真偽値の受渡しは{}で囲む
+    <Hello number={ 42 } />
+    <Hello boolean={ true } />
+    
+    配列の受渡し
+    <Hello array={['a', 'b', 'c']} />
+    
+    オブジェクトの受渡し
+    <Hello object={{ name: 'a', date: '2021/06/28' }} />
+    
+    関数の受渡し
+    <Hello function={(name) => console.log(name)} />
+    
+    変数の受渡し
+    const name = "a";
+    <Hello value={ name } />
+  </>,
+  document.getElementById("root");
+);
+```
+
 
 
 
