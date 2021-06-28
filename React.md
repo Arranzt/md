@@ -124,7 +124,7 @@ propsはobject型
 ```
 const Hello = (props) => {
   return (
-    <div>こんにちは、{ props.name }さん</div>;
+    <div>こんにちは、{ props.name }さん</div>
   );
 };
 
@@ -155,6 +155,26 @@ ReactDOM.render(
   document.getElementById("root");
 );
 ```
+
+### children
+Reactコンポーネントの子要素はchildrenとして渡される
+```
+const Hello = (props) => {
+  return (
+    <div>こんにちは、{ props.children }さん</div>
+  );
+};
+
+ReactDOM.render(
+  <div>
+    <Hello>
+      火の玉
+    </Hello>
+  </div>,
+  document.getElementById('root')
+)
+```
+
 
 
 
