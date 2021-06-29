@@ -1,3 +1,61 @@
+## 環境構築
+```
+Node.jsのインストール
+
+npm init -y
+
+npm i typescript
+
+npx tsc --init
+```
+
+*エラー*
+```
+$ npm i typescript
+
+npm ERR! code ENOSELF
+npm ERR! Refusing to install package with name "typescript" under a package
+npm ERR! also called "typescript". Did you name your project the same
+npm ERR! as the dependency you're installing?
+npm ERR! 
+npm ERR! For more information, see:
+npm ERR!     <https://docs.npmjs.com/cli/install#limitations-of-npms-install-algorithm>
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /Users/arranzt/.npm/_logs/2021-06-29T17_49_52_885Z-debug.log
+
+これは例えば
+webpackというフォルダの中でnpm init -y　をして
+package.jsonのnameが「webpack」となり、
+その中で同じパッケージをインストールすると起こります。
+
+わかりづらいかな、、もうちょっと詳しくいうと、
+webpack/package.json
+この中でwebpackをインストールすると変えていない限りpackage.jsonのnameがwebpackになり、
+「Webpackをそれ自身の依存としてインストールすることを拒否する」というエラーが出ます。
+package.jsonのnameと同じパッケージはインストール拒否されるということですね。
+
+やること
+package.jsonのnameをインストールするパッケージ名と被っているので違う値にする
+
+typescriptというフォルダでnpm init -yをしてしまった結果、package.jsonが
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+となってしまっていた
+このnameを変更すれば直る
+```
+
+
 
 ## TypeScriptとは
 TypeScriptは、マイクロソフトが開発した静的型付け言語です。
