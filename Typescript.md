@@ -41,8 +41,15 @@ ES6以降の多くの機能を使うことができる（クラス構文やモ�
 ## 型アノテーション
 さっそく簡単なコードに触れてみたいと思います。
 コンパイルする環境を構築する前に、playgroundが用意されているのでこちらを利用しましょう。
+
+*
+annotation アノテーションについて
+あるデータに対して関連する情報（メタデータ=型）を注釈として付与すること
+*
+
 ```
-function sayAnything(message: string): string {
+function sayAnything(message: string): string 
+{
   return message
 }
 
