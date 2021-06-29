@@ -401,10 +401,155 @@ export class CatsController {
   }
 }
 ```
+Nest CLIは、すべてのボイラープレートコードを自動的に生成するジェネレーター（回路図）を提供します。これにより、これらすべてを回避し、開発者のエクスペリエンスを大幅に簡素化できます。 この機能の詳細については、こちらをご覧ください。
 
+## Getting up and running
+上記のコントローラーが完全に定義されていても、NestはCatsControllerが存在することを認識していないため、このクラスのインスタンスは作成されません。
 
+コントローラは常にモジュールに属します。そのため、@ Module（）デコレータ内にコントローラ配列を含めます。 ルートAppModule以外のモジュールはまだ定義していないので、それを使用してCatsControllerを導入します。
 
+```
+app.module.tsJS
 
+import { Module } from '@nestjs/common';
+import { CatsController } from './cats/cats.controller';
+
+@Module({
+  controllers: [CatsController],
+})
+export class AppModule {}
+```
+@Module（）デコレータを使用してメタデータをモジュールクラスにアタッチしました。Nestは、マウントする必要のあるコントローラを簡単に反映できるようになりました。
+
+## Library-specific approach
+これまで、レスポンスを操作するNestの標準的な方法について説明してきました。 レスポンスを操作する2番目の方法は、ライブラリ固有の応答オブジェクトを使用することです。 特定のレスポンスオブジェクトを挿入するには、@ Res（）デコレータを使用する必要があります。 違いを示すために、CatsControllerを次のように書き直してみましょう。
+```
+import { Controller, Get, Post, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
+
+@Controller('cats')
+export class CatsController {
+  @Post()
+  create(@Res() res: Response) {
+    res.status(HttpStatus.CREATED).send();
+  }
+
+  @Get()
+  findAll(@Res() res: Response) {
+     res.status(HttpStatus.OK).json([]);
+  }
+}
+```
+
+このアプローチは機能し、実際には応答オブジェクトの完全な制御（ヘッダー操作、ライブラリ固有の機能など）を提供することで、いくつかの点で柔軟性を高めることができますが、注意して使用する必要があります。 一般に、アプローチははるかに明確ではなく、いくつかの欠点があります。 主な欠点は、コードがプラットフォームに依存するようになり（基になるライブラリが応答オブジェクトに異なるAPIを持っている可能性があるため）、テストが難しくなることです（応答オブジェクトをモックする必要があるなど）。
+
+また、上記の例では、インターセプターや@HttpCode（）/ @Header（）デコレーターなど、Nestの標準応答処理に依存するNest機能との互換性が失われます。 これを修正するには、次のようにパススルーオプションをtrueに設定します。
+
+```
+@Get()
+findAll(@Res({ passthrough: true }) res: Response) {
+  res.status(HttpStatus.OK);
+  return [];
+}
+```
+これで、ネイティブ応答オブジェクトを操作できます（たとえば、特定の条件に応じてCookieまたはヘッダーを設定します）が、残りはフレームワークに任せます。
+
+# Providers
+プロバイダーはNestの基本的な概念です。 基本的なNestクラスの多くは、サービス、リポジトリ、ファクトリ、ヘルパーなどのプロバイダーとして扱われる場合があります。 プロバイダーの主なアイデアは、依存関係として注入できるということです。 これは、オブジェクトが相互にさまざまな関係を作成できることを意味し、オブジェクトのインスタンスを「配線」する機能は、主にNestランタイムシステムに委任できます。  
+
+前の章では、単純なCatsControllerを作成しました。 コントローラはHTTPリクエストを処理し、より複雑なタスクをプロバイダーに委任する必要があります。 プロバイダーは、モジュール内でプロバイダーとして宣言されているプレーンなJavaScriptクラスです。  
+
+Nestを使用すると、依存関係をより「XX-way」で設計および整理できるため、SOLIDの原則に従うことを強くお勧めします。
+
+## Services
+簡単なCatsServiceを作成することから始めましょう。 このサービスは、データの保存と取得を担当し、CatsControllerによって使用されるように設計されているため、プロバイダーとして定義するのに適しています。
+```
+cats.service.ts
+
+import { Injectable } from '@nestjs/common';
+import { Cat } from './interfaces/cat.interface';
+
+@Injectable()
+export class CatsService {
+  private readonly cats: Cat[] = [];
+
+  create(cat: Cat) {
+    this.cats.push(cat);
+  }
+
+  findAll(): Cat[] {
+    return this.cats;
+  }
+}
+```
+
+CLIを使用してサービスを作成するには、`$ nest g servicecats`コマンドを実行するだけです。
+
+```
+interfaces/cat.interface.ts
+
+export interface Cat {
+  name: string;
+  age: number;
+  breed: string;
+}
+```
+猫を取得するためのサービスクラスができたので、CatsController内で使用しましょう。
+
+```
+cats.controller.ts
+
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
+
+@Controller('cats')
+export class CatsController {
+  constructor(private catsService: CatsService) {}
+
+  @Post()
+  async create(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
+  }
+
+  @Get()
+  async findAll(): Promise<Cat[]> {
+    return this.catsService.findAll();
+  }
+}
+```
+
+CatsServiceは、クラスコンストラクターを介して注入されます。 プライベート構文の使用に注意してください。 この省略形により、catsServiceメンバーを同じ場所ですぐに宣言して初期化することができます。
+
+## Dependency injection
+Nestは、依存性注入として一般に知られている強力なデザインパターンを中心に構築されています。 公式のAngularドキュメントでこの概念に関するすばらしい記事を読むことをお勧めします。
+
+Nestでは、TypeScript機能のおかげで、依存関係はタイプだけで解決されるため、依存関係の管理が非常に簡単です。 以下の例では、NestはCatsServiceのインスタンスを作成して返すことでcatsServiceを解決します（または、シングルトンの通常の場合、既存のインスタンスがすでに他の場所で要求されている場合はそれを返します）。 この依存関係は解決され、コントローラーのコンストラクターに渡されます（または指定されたプロパティに割り当てられます）。
+
+```
+constructor(private catsService: CatsService) {}
+```
+
+## Scopes
+プロバイダーは通常、アプリケーションのライフサイクルと同期したライフタイム（「スコープ」）を持っています。 アプリケーションがブートストラップされると、すべての依存関係を解決する必要があるため、すべてのプロバイダーをインスタンス化する必要があります。 同様に、アプリケーションがシャットダウンすると、各プロバイダーは破棄されます。 ただし、プロバイダーの存続期間をリクエストスコープにする方法もあります。 これらのテクニックについて詳しくは、こちらをご覧ください。
+
+## Custom providers
+Nestには、プロバイダー間の関係を解決する制御の反転（ "IoC"）コンテナが組み込まれています。 この機能は、上記の依存性注入機能の基礎になっていますが、実際には、これまでに説明したものよりもはるかに強力です。 プロバイダーを定義するには、いくつかの方法があります。プレーンな値、クラス、および非同期ファクトリまたは同期ファクトリのいずれかを使用できます。 その他の例をここに示します。
+
+## Optional providers
+場合によっては、必ずしも解決する必要のない依存関係がある場合があります。 たとえば、クラスは構成オブジェクトに依存している場合がありますが、何も渡されない場合は、デフォルト値を使用する必要があります。 このような場合、構成プロバイダーがなくてもエラーが発生しないため、依存関係はオプションになります。
+
+プロバイダーがオプションであることを示すには、コンストラクターの署名で@Optional（）デコレーターを使用します。
+```
+import { Injectable, Optional, Inject } from '@nestjs/common';
+
+@Injectable()
+export class HttpService<T> {
+  constructor(@Optional() @Inject('HTTP_OPTIONS') private httpClient: T) {}
+}
+```
+上記の例では、カスタムプロバイダーを使用していることに注意してください。これが、HTTP_OPTIONSカスタムトークンを含める理由です。 前の例は、コンストラクター内のクラスを介した依存関係を示すコンストラクターベースのインジェクションを示しました。 カスタムプロバイダーとそれに関連するトークンについて詳しくは、こちらをご覧ください。
 
 
 
