@@ -219,7 +219,81 @@ PUTで相対的な値を用いる
 元の値に５０を足すというPUTメソッドを作ると、実行のたびに結果が変わることから、べき等性が消失する
 なので、PUTを用いるのなら必ず絶対的な値を指定して利用すること。例えば、値を１００から１５０に変更する、みたいに
 
+API実行まで
+```
+cluster:Desktop arranzt$ mkdir api_pra
+cluster:Desktop arranzt$ cd api_pra
+cluster:api_pra arranzt$ npm init
 
+package name: (api_pra) 
+version: (1.0.0) 
+description: 
+entry point: (index.js) 
+test command: 
+git repository: 
+keywords: 
+author: cluster
+license: (ISC) 
+About to write to /Users/arranzt/Desktop/api_pra/package.json:
+
+{
+  "name": "api_pra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "cluster",
+  "license": "ISC"
+}
+
+Is this OK? (yes) y
+
+cluster:api_pra arranzt$ npm install --save express sqlite3 body-parser
+cluster:api_pra arranzt$ npm install -g node-dev
+
+package.json
+"start": "node-dev app/app.js"を追加
+{
+  "name": "api_pra",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node-dev app/app.js"
+  },
+  "author": "cluster",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "sqlite3": "^5.0.2"
+  }
+}
+
+appディレクトリ追加
+その中にapp.jsを追加
+
+const express = require('express');
+const app = express();
+
+app.get('/api/v1/hello', (req, res) => {
+    res.json({"message": "hello world"});
+})
+
+const port = process.env.PORT || 3000;
+app.listen(port);
+console.log("Listen on port" + port);
+
+cluster:api_pra arranzt$ npm start
+
+別ターミナル立ち上げ
+cluster:api_pra arranzt$ curl -X GET "http://localhost:3000/api/v1/hello"
+cluster:api_pra arranzt$ curl -X GET "http://localhost:3000/api/v1/hello" -v
+
+```
 
 
 
