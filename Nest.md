@@ -21,3 +21,16 @@ $ npm run start
 ３．app.module.ts	アプリケーションのルートモジュール  
 ４．app.service.ts	シングルメソッドの簡便なサービス  
 ５．main.ts	NestFactory機能を使いNest アプリケーションインスタンスを作る為のファイル  
+
+## main.ts
+```
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  await app.listen(3000);
+}
+bootstrap();
+```
+コアとなるのが`NestFactory`クラスの存在である。このクラスは以下の静的関数を利用するためにインポートされる。
